@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Hub - ລະບົບຈັດການວຽກ ແລະ ຕິດຕາມປະຈຳການ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1e3c72;
+            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --primary-light: #eff6ff;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+
+            --success-color: #10b981;
+            --success-bg: #d1fae5;
+            --warning-color: #f59e0b;
+            --warning-bg: #fef3c7;
+            --danger-color: #ef4444;
+            --danger-bg: #fee2e2;
+            --info-color: #6b7280;
+            --info-bg: #f3f4f6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-dark); display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 270px; background: #ffffff; border-right: 1px solid var(--border-color);
+            padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: var(--shadow-sm);
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin-bottom: 24px; }
+        .logo-icon {
+            width: 38px; height: 38px; background: var(--primary-gradient); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px;
+        }
+        .logo-text { font-size: 17px; font-weight: 700; color: #0f172a; }
+
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md);
+            color: #475569; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.2s ease;
+        }
+        .nav-item svg { width: 20px; height: 20px; stroke-width: 2; fill: none; stroke: currentColor; }
+        .nav-item:hover { background-color: var(--primary-light); color: var(--primary); }
+        .nav-item.active { background: var(--primary-gradient); color: #ffffff; box-shadow: 0 4px 12px rgba(30, 60, 114, 0.25); }
+
+        .main-wrapper { flex: 1; padding: 24px 32px; overflow-y: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-title { font-size: 22px; font-weight: 700; color: #0f172a; }
+
+        .db-status-badge {
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: #ffffff;
+            border: 1px solid var(--border-color); border-radius: 20px; font-size: 12px; font-weight: 500;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+
+        .panel-section { display: none; }
+        .panel-section.active { display: block !important; }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stats-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+        .card {
+            background: var(--bg-card); padding: 14px 18px; border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex;
+            align-items: center; justify-content: space-between;
+        }
+        .card-info div { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 2px; }
+        .card-info span { font-size: 20px; font-weight: 700; display: block; }
+        .card-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+        .card-present .card-info span { color: var(--success-color); }
+        .card-present .card-icon { background: var(--success-bg); }
+        .card-meeting .card-info span { color: var(--warning-color); }
+        .card-meeting .card-icon { background: var(--warning-bg); }
+        .card-pending .card-info span { color: var(--info-color); }
+        .card-pending .card-icon { background: var(--info-bg); }
+        .card-absent .card-info span { color: var(--danger-color); }
+        .card-absent .card-icon { background: var(--danger-bg); }
+
+        .card-section {
+            background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color);
+            padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 24px;
+        }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .section-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        .btn-primary {
+            background: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: var(--primary-gradient); color: #ffffff; }
+        th { padding: 10px 14px; font-weight: 600; text-align: left; }
+        td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
+        tbody tr:hover { background-color: #f8fafc; }
+
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: var(--success-bg); color: #065f46; }
+        .badge-warning { background: var(--warning-bg); color: #92400e; }
+        .badge-danger { background: var(--danger-bg); color: #991b1b; }
+        .badge-info { background: var(--info-bg); color: #374151; }
+
+        .late-highlight { color: var(--danger-color); font-weight: 600; }
+        .normal-highlight { color: var(--success-color); }
+
+        .team-progress-list { display: flex; flex-direction: column; gap: 12px; }
+        .member-progress-card { background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; }
+        .member-info-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; }
+        .progress-bar-bg { width: 100%; height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary-gradient); border-radius: 4px; transition: width 0.4s ease; }
+
+        .kanban-board-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .kanban-column { background: #f8fafc; border-radius: var(--radius-lg); padding: 16px; border: 1px solid var(--border-color); min-height: 450px; }
+        .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color); font-weight: 700; font-size: 13px; }
+        .column-count { background: #e2e8f0; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex !important; }
+        .modal-content { background: #ffffff; border-radius: var(--radius-lg); width: 100%; max-width: 500px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .close-modal-btn { background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 13px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="logo-container">
+                <div class="logo-icon">📊</div>
+                <span class="logo-text">Team Hub</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-panel="attendance">
+                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>1. ການຕິດຕາມປະຈຳການ</span>
+                </li>
+                <li class="nav-item" data-panel="dashboard">
+                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" /></svg>
+                    <span>2. ຄວາມຄືບໜ້າການປະຕິບັດວຽກ</span>
+                </li>
+                <li class="nav-item" data-panel="kanban">
+                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                    <span>3. ການມອບໝາຍໜ້າວຽກ</span>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <header>
+            <h1 class="page-title">ພະແນກສະຖິຕິສິ່ງແວດລ້ອມ</h1>
+            <div class="db-status-badge">
+                <span class="status-dot"></span>
+                <span>Google Sheets Sync</span>
+            </div>
+        </header>
+
+        <!-- Panel 1: Attendance -->
+        <section class="panel-section active" id="attendance-panel-view">
+            <div class="cards-grid">
+                <div class="card card-present">
+                    <div class="card-info"><div>ປະຈຳການ</div><span id="overview-present">0 ຄົນ</span></div>
+                    <div class="card-icon">🟢</div>
+                </div>
+                <div class="card card-meeting">
+                    <div class="card-info"><div>ປະຊຸມນອກສະຖານທີ່</div><span id="overview-meeting">0 ຄົນ</span></div>
+                    <div class="card-icon">🟡</div>
+                </div>
+                <div class="card card-pending">
+                    <div class="card-info"><div>ຍັງບໍ່ມາ</div><span id="overview-pending">0 ຄົນ</span></div>
+                    <div class="card-icon">⚪</div>
+                </div>
+                <div class="card card-absent">
+                    <div class="card-info"><div>ຂາດ / ບໍ່ມາ</div><span id="overview-absent">0 ຄົນ</span></div>
+                    <div class="card-icon">🔴</div>
+                </div>
+            </div>
+
+            <div class="card-section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 ລາຍລະອຽດສະຖານະປະຈຳການຂອງພະນັກງານ (Sheet: Attention)</h2>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ຊື່ ແລະ ນາມສະກຸນ</th>
+                                <th style="text-align:center;">ສະຖານະປະຈຳການ</th>
+                                <th style="text-align:center;">ເວລາເຂົ້າວຽກ</th>
+                                <th style="text-align:center;">ມາຊ້າ</th>
+                                <th style="text-align:center;">ມາຊ້າສະສົມ</th>
+                                <th style="text-align:center;">ມື້ປະຈຳການ</th>
+                                <th style="text-align:center;">ມື້ຂາດ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+                            <tr><td colspan="7" style="text-align:center;">ກຳລັງໂຫຼດຂໍ້ມູນປະຈຳການ...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel 2: Dashboard -->
+        <section class="panel-section" id="dashboard-panel-view">
+            <div class="stats-grid-5">
+                <div class="card"><div class="card-info"><div>ວຽກທັງໝົດ</div><span id="stat-total-tasks">0</span></div></div>
+                <div class="card"><div class="card-info"><div>ລໍຖ້າດຳເນີນການ</div><span id="stat-todo-tasks">0</span></div></div>
+                <div class="card"><div class="card-info"><div>ກຳລັງປະຕິບັດ</div><span id="stat-progress-tasks">0</span></div></div>
+                <div class="card"><div class="card-info"><div>ສຳເລັດແລ້ວ</div><span id="stat-completed-tasks">0</span></div></div>
+                <div class="card"><div class="card-info"><div>ກາຍກຳນົດສົ່ງ</div><span id="stat-overdue-tasks" style="color:var(--danger-color)">0</span></div></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                <div class="card-section">
+                    <div class="section-header">
+                        <h2 class="section-title">📋 ລາຍການວຽກທັງໝົດໃນພະແນກ (Sheet: Task)</h2>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ຊື່ອຽກ / ລາຍລະອຽດ</th>
+                                    <th>ຜູ້ຮັບຜິດຊອບ</th>
+                                    <th>ກຳນົດສົ່ງ</th>
+                                    <th>ຄວາມສຳຄັນ</th>
+                                    <th>ສະຖານະ</th>
+                                    <th>ຜູ້ມອບວຽກ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="master-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-section">
+                    <div class="section-header">
+                        <h2 class="section-title">📊 ພາບລວມການເຮັດວຽກຂອງທີມ</h2>
+                    </div>
+                    <div class="team-progress-list" id="team-progress-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel 3: Kanban Board -->
+        <section class="panel-section" id="kanban-panel-view">
+            <div class="section-header">
+                <p style="color: var(--text-muted); font-size: 13px;">ກະດານຈັດການວຽກພາບລວມຂອງພະແນກ</p>
+                <button class="btn-primary" id="kanban-add-task-btn">+ ເພີ່ມວຽກໃໝ່</button>
+            </div>
+
+            <div class="kanban-board-container">
+                <div class="kanban-column">
+                    <div class="column-header"><span>ລໍຖ້າດຳເນີນການ</span><span class="column-count" id="count-todo">0</span></div>
+                    <div id="cards-todo"></div>
+                </div>
+                <div class="kanban-column">
+                    <div class="column-header"><span>ກຳລັງເຮັດ</span><span class="column-count" id="count-in-progress">0</span></div>
+                    <div id="cards-in-progress"></div>
+                </div>
+                <div class="kanban-column">
+                    <div class="column-header"><span>ກຳລັງກວດສອບ</span><span class="column-count" id="count-review">0</span></div>
+                    <div id="cards-review"></div>
+                </div>
+                <div class="kanban-column">
+                    <div class="column-header"><span>ສຳເລັດແລ້ວ</span><span class="column-count" id="count-completed">0</span></div>
+                    <div id="cards-completed"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="font-size: 16px;">ເພີ່ມວຽກໃໝ່</h3>
+                <button class="close-modal-btn" id="close-modal-btn">&times;</button>
+            </div>
+            <form id="task-form">
+                <div class="form-group">
+                    <label class="form-label">ຊື່ວຽກ *</label>
+                    <input type="text" id="task-name" class="form-control" placeholder="ກະລຸນາປ້ອນຊື່ວຽກ" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ລາຍລະອຽດວຽກ</label>
+                    <textarea id="task-desc" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">ຜູ້ມອບວຽກ *</label>
+                        <select id="task-assignor" class="form-control" required>
+                            <option value="Bangthong" selected>ທ່ານ ນາງ ບາງທອງ ທິບສົມພັນ</option>
+                            <option value="Khamla">ທ່ານ ຄຳຫຼ້າ ສິນວິໄຊ</option>
+                            <option value="Sypaseut">ທ່ານ ສີປະເສີດ ນະວົງສາ</option>
+                            <option value="Leokham">ທ່ານ ແຫຼວຄຳ ດວງພະຈັນ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ຜູ້ຮັບຜິດຊອບ *</label>
+                        <select id="task-assignee" class="form-control" required>
+                            <option value="Khamla">ທ່ານ ຄຳຫຼ້າ ສິນວິໄຊ</option>
+                            <option value="Sypaseut">ທ່ານ ສີປະເສີດ ນະວົງສາ</option>
+                            <option value="Leokham">ທ່ານ ແຫຼວຄຳ ດວງພະຈັນ</option>
+                            <option value="Khorlaxaysouk">ທ່ານ ຄໍລະໄຊ ລີຢູ້</option>
+                            <option value="Soudavone">ທ່ານ ນາງ ສຸດາວອນ ພັນທະວິໄລ</option>
+                            <option value="Manudsone">ທ່ານ ມະນັດສອນ ປຣະສອນໄຊ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">ວັນທີກຳນົດສົ່ງ *</label>
+                        <input type="date" id="task-deadline" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ຄວາມສຳຄັນ *</label>
+                        <select id="task-priority" class="form-control" required>
+                            <option value="low">ທົ່ວໄປ</option>
+                            <option value="medium" selected>ປານກາງ</option>
+                            <option value="urgent">ດ່ວນທີ່ສຸດ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancel-task-btn">ຍົກເລີກ</button>
+                    <button type="submit" class="btn-primary">ບັນທຶກວຽກ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sheetId = '18mAVnA78g6w5v7C-f70uo5Aot7v3NugC4IJBxzIb5vg';
+        const WORK_START_TIME = "08:00";
+        const CUTOFF_HOUR = 16;
+
+        const MASTER_EMPLOYEE_LIST = [
+            "ທ່ານ ຄຳຫຼ້າ ສິນວິໄຊ",
+            "ທ່ານ ສີປະເສີດ ນະວົງສາ",
+            "ທ່ານ ແຫຼວຄຳ ດວງພະຈັນ",
+            "ທ່ານ ຄໍລະໄຊ ລີຢູ້",
+            "ທ່ານ ນາງ ສຸດາວອນ ພັນທະວິໄລ",
+            "ທ່ານ ມະນັດສອນ ປຣະສອນໄຊ"
+        ];
+
+        const userMap = {
+            "Bangthong": "ທ່ານ ນາງ ບາງທອງ ທິບສົມພັນ",
+            "Khamla": "ທ່ານ ຄຳຫຼ້າ ສິນວິໄຊ",
+            "Sypaseut": "ທ່ານ ສີປະເສີດ ນະວົງສາ",
+            "Leokham": "ທ່ານ ແຫຼວຄຳ ດວງພະຈັນ",
+            "Khorlaxaysouk": "ທ່ານ ຄໍລະໄຊ ລີຢູ້",
+            "Soudavone": "ທ່ານ ນາງ ສຸດາວອນ ພັນທະວິໄລ",
+            "Manudsone": "ທ່ານ ມະນັດສອນ ປຣະສອນໄຊ"
+        };
+
+        const priorityMap = { "low": "ທົ່ວໄປ", "medium": "ປານກາງ", "urgent": "ດ່ວນທີ່ສຸດ" };
+
+        let globalTasks = [];
+
+        // --- 1. Load Attendance Data ---
+        function loadAttendanceData() {
+            const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=Attention&tqx=responseHandler:handleAttendanceResponse`;
+            const script = document.createElement('script');
+            script.src = url;
+            document.body.appendChild(script);
+        }
+
+        function calculateLateTime(dateTimeStr) {
+            if (!dateTimeStr || dateTimeStr === '-') return { text: '-', mins: 0 };
+            const timePart = dateTimeStr.includes(' ') ? dateTimeStr.split(' ')[1] : dateTimeStr;
+            const parts = timePart.split(':');
+            if (parts.length < 2) return { text: '-', mins: 0 };
+
+            const checkInMins = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+            const [sH, sM] = WORK_START_TIME.split(':').map(Number);
+            const diffMins = checkInMins - (sH * 60 + sM);
+
+            if (diffMins <= 0) return { text: 'ມາປົກກະຕິ', mins: 0 };
+            const h = Math.floor(diffMins / 60), m = diffMins % 60;
+            return { text: h > 0 ? `${h} ຊມ ${m} ນາທີ` : `${m} ນາທີ`, mins: diffMins };
+        }
+
+        function handleAttendanceResponse(response) {
+            if (response.status === 'error') return;
+
+            const rows = response.table.rows;
+            const tableBody = document.getElementById('attendance-table-body');
+            tableBody.innerHTML = '';
+
+            const sheetDataMap = {};
+            for (let i = 0; i < rows.length; i++) {
+                const name = rows[i].c[1] ? rows[i].c[1].v : '';
+                const status = rows[i].c[2] ? rows[i].c[2].v : '';
+                const dateTime = rows[i].c[0] ? rows[i].c[0].f || rows[i].c[0].v : '';
+                if (name && !name.includes('ຊື່')) sheetDataMap[name] = { status, dateTime };
+            }
+
+            let cntPresent = 0, cntMeeting = 0, cntAbsent = 0, cntPending = 0;
+
+            MASTER_EMPLOYEE_LIST.forEach(name => {
+                let statusBadge = '', checkInTime = '-', lateInfo = { text: '-', mins: 0 }, lateClass = '';
+                let daysAttended = 0, daysAbsent = 0;
+
+                if (sheetDataMap[name]) {
+                    const record = sheetDataMap[name];
+                    checkInTime = record.dateTime.includes(' ') ? record.dateTime.split(' ')[1] : record.dateTime;
+
+                    if (record.status.includes('ປະຈຳການ')) {
+                        cntPresent++; daysAttended = 1;
+                        statusBadge = `<span class="badge badge-success">🟢 ປະຈຳການ</span>`;
+                        lateInfo = calculateLateTime(record.dateTime);
+                        lateClass = lateInfo.mins > 0 ? 'late-highlight' : 'normal-highlight';
+                    } else if (record.status.includes('ປະຊຸມ')) {
+                        cntMeeting++; daysAttended = 1;
+                        statusBadge = `<span class="badge badge-warning">🟡 ປະຊຸມ</span>`;
+                        lateInfo.text = 'ປະຊຸມ';
+                    } else if (record.status.includes('ຂາດ')) {
+                        cntAbsent++; daysAbsent = 1;
+                        statusBadge = `<span class="badge badge-danger">🔴 ຂາດ</span>`;
+                        lateInfo.text = 'ຂາດວຽກ';
+                    } else if (record.status.includes('ລາພັກ')) {
+                        statusBadge = `<span class="badge badge-info" style="background: #e0f2fe; color: #0369a1;">🔵 ລາພັກ</span>`;
+                        lateInfo.text = 'ລາພັກ';
+                    } else {
+                        statusBadge = `<span class="badge badge-info">⚪ ຍັງບໍ່ມາ</span>`;
+                        lateInfo.text = 'ລໍຖ້າອັບເດດ'; cntPending++;
+                    }
+                } else {
+                    statusBadge = `<span class="badge badge-info">⚪ ຍັງບໍ່ມາ</span>`;
+                    lateInfo.text = 'ລໍຖ້າອັບເດດ'; 
+                    cntPending++;
+                }
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 600;">${name}</td>
+                        <td style="text-align:center;">${statusBadge}</td>
+                        <td style="text-align:center;">${checkInTime}</td>
+                        <td style="text-align:center;" class="${lateClass}">${lateInfo.text}</td>
+                        <td style="text-align:center;">${lateInfo.mins > 0 ? lateInfo.mins + ' ນາທີ' : '0'}</td>
+                        <td style="text-align:center;">${daysAttended}</td>
+                        <td style="text-align:center;">${daysAbsent}</td>
+                    </tr>`;
+            });
+
+            document.getElementById('overview-present').innerText = cntPresent + ' ຄົນ';
+            document.getElementById('overview-meeting').innerText = cntMeeting + ' ຄົນ';
+            document.getElementById('overview-pending').innerText = cntPending + ' ຄົນ';
+            document.getElementById('overview-absent').innerText = cntAbsent + ' ຄົນ';
+        }
+
+        // --- 2. Load Tasks Data from Apps Script ---
+        function loadTasksData() {
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(tasks) {
+                        globalTasks = tasks || [];
+                        renderTasksAndProgress();
+                    })
+                    .getTasksData();
+            } else {
+                renderTasksAndProgress();
+            }
+        }
+
+        // --- 3. Render Tasks & Progress ---
+        function renderTasksAndProgress() {
+            const masterBody = document.getElementById('master-table-body');
+            const progressContainer = document.getElementById('team-progress-list');
+
+            let total = globalTasks.length;
+            let todo = globalTasks.filter(t => t.status === 'todo').length;
+            let progress = globalTasks.filter(t => t.status === 'in-progress').length;
+            let completed = globalTasks.filter(t => t.status === 'completed').length;
+            let overdue = globalTasks.filter(t => t.deadline < new Date().toISOString().split('T')[0] && t.status !== 'completed').length;
+
+            document.getElementById('stat-total-tasks').innerText = total;
+            document.getElementById('stat-todo-tasks').innerText = todo;
+            document.getElementById('stat-progress-tasks').innerText = progress;
+            document.getElementById('stat-completed-tasks').innerText = completed;
+            document.getElementById('stat-overdue-tasks').innerText = overdue;
+
+            if (masterBody) {
+                masterBody.innerHTML = '';
+                globalTasks.forEach(task => {
+                    masterBody.innerHTML += `
+                        <tr>
+                            <td><strong>${task.name}</strong><br><small style="color:var(--text-muted);">${task.desc || ''}</small></td>
+                            <td>${userMap[task.assignee] || task.assignee}</td>
+                            <td>${task.deadline}</td>
+                            <td><span style="color:${task.priority === 'urgent' ? '#dc2626' : '#2563eb'}; font-weight:600;">${priorityMap[task.priority] || task.priority}</span></td>
+                            <td><span class="badge badge-info">${task.status}</span></td>
+                            <td>${userMap[task.assignor] || task.assignor}</td>
+                        </tr>`;
+                });
+            }
+
+            if (progressContainer) {
+                progressContainer.innerHTML = '';
+                const assignees = ["Khamla", "Sypaseut", "Leokham", "Khorlaxaysouk", "Soudavone", "Manudsone"];
+                assignees.forEach(userKey => {
+                    const name = userMap[userKey];
+                    const userTasks = globalTasks.filter(t => t.assignee === userKey);
+                    const totalT = userTasks.length;
+                    const compT = userTasks.filter(t => t.status === 'completed').length;
+                    const pct = totalT > 0 ? Math.round((compT / totalT) * 100) : 0;
+
+                    progressContainer.innerHTML += `
+                        <div class="member-progress-card">
+                            <div class="member-info-header">
+                                <span><strong>${name}</strong></span>
+                                <span style="color:var(--primary); font-weight:700;">${compT}/${totalT} ວຽກ (${pct}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            // Kanban Board Render ພ້ອມ Selector ປ່ຽນສະຖານະ
+            ['todo', 'in-progress', 'review', 'completed'].forEach(st => {
+                const col = document.getElementById(`cards-${st}`);
+                const cnt = document.getElementById(`count-${st}`);
+                const list = globalTasks.filter(t => t.status === st);
+                if (cnt) cnt.innerText = list.length;
+                if (col) {
+                    col.innerHTML = '';
+                    list.forEach(t => {
+                        col.innerHTML += `
+                            <div style="background:#fff; border-radius:8px; padding:12px; margin-bottom:10px; border:1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <div style="font-weight:700; font-size:12px; margin-bottom:4px;">${t.name}</div>
+                                <div style="font-size:11px; color:#64748b;">👤 ${userMap[t.assignee] || t.assignee}</div>
+                                <div style="font-size:10px; color:#94a3b8; margin-top:4px; margin-bottom:8px;">📅 ${t.deadline}</div>
+                                
+                                <div style="border-top: 1px dashed #e2e8f0; padding-top: 6px; margin-top: 6px;">
+                                    <select onchange="changeTaskStatus('${t.id}', this.value)" style="width:100%; font-size:11px; padding:4px; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer;">
+                                        <option value="todo" ${t.status === 'todo' ? 'selected' : ''}>📌 ລໍຖ້າດຳເນີນການ</option>
+                                        <option value="in-progress" ${t.status === 'in-progress' ? 'selected' : ''}>⚡ ກຳລັງເຮັດ</option>
+                                        <option value="review" ${t.status === 'review' ? 'selected' : ''}>🔍 ກຳລັງກວດສອບ</option>
+                                        <option value="completed" ${t.status === 'completed' ? 'selected' : ''}>✅ ສຳເລັດແລ້ວ</option>
+                                    </select>
+                                </div>
+                            </div>`;
+                    });
+                }
+            });
+        }
+
+        // ຟັງຊັນປ່ຽນສະຖານະ ແລະ ສົ່ງໄປອັບເດດຢູ່ Google Sheet
+        function changeTaskStatus(taskId, newStatus) {
+            const task = globalTasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = newStatus;
+                renderTasksAndProgress();
+            }
+
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(res) {
+                        if (res.status !== 'success') {
+                            alert('❌ ' + res.message);
+                        }
+                    })
+                    .withFailureHandler(function(err) {
+                        alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
+                    })
+                    .updateTaskStatus(taskId, newStatus);
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const panelSections = document.querySelectorAll('.panel-section');
+
+            navItems.forEach(nav => {
+                nav.addEventListener('click', function() {
+                    const target = this.getAttribute('data-panel') + '-panel-view';
+                    navItems.forEach(n => n.classList.remove('active'));
+                    this.classList.add('active');
+
+                    panelSections.forEach(p => {
+                        p.id === target ? p.classList.add('active') : p.classList.remove('active');
+                    });
+                });
+            });
+
+            const modal = document.getElementById('task-modal');
+            document.getElementById('kanban-add-task-btn')?.addEventListener('click', () => modal.classList.add('active'));
+            document.getElementById('close-modal-btn')?.addEventListener('click', () => modal.classList.remove('active'));
+            document.getElementById('cancel-task-btn')?.addEventListener('click', () => modal.classList.remove('active'));
+
+            // Submit Form Record Task
+            const taskForm = document.getElementById('task-form');
+            if (taskForm) {
+                taskForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerText;
+                    submitBtn.innerText = 'ກຳລັງບັນທຶກ...';
+                    submitBtn.disabled = true;
+
+                    const newTask = {
+                        name: document.getElementById('task-name').value,
+                        desc: document.getElementById('task-desc').value,
+                        assignor: document.getElementById('task-assignor').value,
+                        assignee: document.getElementById('task-assignee').value,
+                        deadline: document.getElementById('task-deadline').value,
+                        priority: document.getElementById('task-priority').value,
+                        status: 'todo'
+                    };
+
+                    if (typeof google !== 'undefined' && google.script && google.script.run) {
+                        google.script.run
+                            .withSuccessHandler(function(res) {
+                                submitBtn.innerText = originalText;
+                                submitBtn.disabled = false;
+                                if (res.status === 'success') {
+                                    globalTasks.push({ id: res.taskId, ...newTask });
+                                    renderTasksAndProgress();
+                                    modal.classList.remove('active');
+                                    taskForm.reset();
+                                    alert('✅ ' + res.message);
+                                } else {
+                                    alert('❌ ' + res.message);
+                                }
+                            })
+                            .withFailureHandler(function(err) {
+                                submitBtn.innerText = originalText;
+                                submitBtn.disabled = false;
+                                alert('❌ ເກີດຂໍ້ຜິດພາດ: ' + err.message);
+                            })
+                            .recordTask(newTask);
+                    } else {
+                        globalTasks.push({ id: Date.now().toString(), ...newTask });
+                        renderTasksAndProgress();
+                        modal.classList.remove('active');
+                        taskForm.reset();
+                        submitBtn.innerText = originalText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            loadAttendanceData();
+            loadTasksData();
+        });
+    </script>
+</body>
+</html>
