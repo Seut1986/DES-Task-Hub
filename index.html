@@ -2,7 +2,7 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Team Hub - ລະບົບຈັດການວຽກ ແລະ ຕິດຕາມປະຈຳການ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Lao', sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-dark); display: flex; min-height: 100vh; }
+        body { background-color: var(--bg-main); color: var(--text-dark); display: flex; min-height: 100vh; flex-direction: row; }
 
         .sidebar {
             width: 270px; background: #ffffff; border-right: 1px solid var(--border-color);
@@ -71,6 +71,8 @@
 
         .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
         .stats-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+        .dashboard-content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        
         .card {
             background: var(--bg-card); padding: 14px 18px; border-radius: var(--radius-lg);
             border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex;
@@ -103,7 +105,7 @@
         }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
         thead { background: var(--primary-gradient); color: #ffffff; }
         th { padding: 10px 14px; font-weight: 600; text-align: left; }
         td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
@@ -129,9 +131,9 @@
         .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color); font-weight: 700; font-size: 13px; }
         .column-count { background: #e2e8f0; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
         .modal-overlay.active { display: flex !important; }
-        .modal-content { background: #ffffff; border-radius: var(--radius-lg); width: 100%; max-width: 500px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .modal-content { background: #ffffff; border-radius: var(--radius-lg); width: 100%; max-width: 500px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .close-modal-btn { background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; }
         .form-group { margin-bottom: 14px; }
@@ -140,6 +142,38 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); padding: 12px 16px; }
+            .logo-container { margin-bottom: 12px; }
+            .nav-menu { flex-direction: row; justify-content: space-between; overflow-x: auto; }
+            .nav-item { padding: 8px 12px; font-size: 12px; white-space: nowrap; }
+            .main-wrapper { padding: 16px; }
+            .cards-grid, .stats-grid-5 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .dashboard-content-grid { grid-template-columns: 1fr; }
+            .kanban-board-container { grid-template-columns: 1fr; gap: 12px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+        }
+
+        @media (max-width: 932px) and (orientation: landscape) {
+            body { flex-direction: row; }
+            .sidebar { width: 200px; padding: 16px 10px; }
+            .logo-text { font-size: 14px; }
+            .nav-item { padding: 8px 10px; font-size: 12px; }
+            .main-wrapper { padding: 16px; }
+            .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+            .stats-grid-5 { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+            .dashboard-content-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .kanban-board-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid-5 { grid-template-columns: repeat(3, 1fr); }
+            .dashboard-content-grid { grid-template-columns: 1fr; }
+            .kanban-board-container { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 <body>
@@ -153,15 +187,15 @@
             <ul class="nav-menu">
                 <li class="nav-item active" data-panel="attendance">
                     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>1. ການຕິດຕາມປະຈຳການ</span>
+                    <span>1. ຕິດຕາມປະຈຳການ</span>
                 </li>
                 <li class="nav-item" data-panel="dashboard">
                     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" /></svg>
-                    <span>2. ຄວາມຄືບໜ້າການປະຕິບັດວຽກ</span>
+                    <span>2. ຄວາມຄືບໜ້າວຽກ</span>
                 </li>
                 <li class="nav-item" data-panel="kanban">
                     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                    <span>3. ການມອບໝາຍໜ້າວຽກ</span>
+                    <span>3. ມອບໝາຍວຽກ</span>
                 </li>
             </ul>
         </div>
@@ -199,9 +233,10 @@
 
             <div class="card-section">
                 <div class="section-header">
-                    <h2 class="section-title">📋 ລາຍລະອຽດສະຖານະປະຈຳການຂອງພະນັກງານ (Sheet: Attention)</h2>
+                    <!-- 💡 ປ່ຽນຫົວຂໍ້ຢູ່ບ່ອນນີ້ -->
+                    <h2 class="section-title" id="attendance-section-title">📋 ລາຍລະອຽດປະຈຳການວັນທີ...</h2>
                 </div>
-                <div style="overflow-x: auto;">
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                     <table>
                         <thead>
                             <tr>
@@ -232,12 +267,12 @@
                 <div class="card"><div class="card-info"><div>ກາຍກຳນົດສົ່ງ</div><span id="stat-overdue-tasks" style="color:var(--danger-color)">0</span></div></div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+            <div class="dashboard-content-grid">
                 <div class="card-section">
                     <div class="section-header">
-                        <h2 class="section-title">📋 ລາຍການວຽກທັງໝົດໃນພະແນກ (Sheet: Task)</h2>
+                        <h2 class="section-title">📋 ລາຍການວຽກທັງໝົດ (Sheet: Task)</h2>
                     </div>
-                    <div style="overflow-x: auto;">
+                    <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                         <table>
                             <thead>
                                 <tr>
@@ -266,7 +301,7 @@
         <!-- Panel 3: Kanban Board -->
         <section class="panel-section" id="kanban-panel-view">
             <div class="section-header">
-                <p style="color: var(--text-muted); font-size: 13px;">ກະດານຈັດການວຽກພາບລວມຂອງພະແນກ</p>
+                <p style="color: var(--text-muted); font-size: 13px;">ກະດານຈັດການວຽກພາບລວມ</p>
                 <button class="btn-primary" id="kanban-add-task-btn">+ ເພີ່ມວຽກໃໝ່</button>
             </div>
 
@@ -668,6 +703,14 @@
 
             loadAttendanceData();
             loadTasksData();
+
+            // 💡 ເພີ່ມ dynamic date ໃສ່ຫົວຂໍ້ປະຈຳການ
+            const today = new Date();
+            const formattedDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+            const titleElem = document.getElementById('attendance-section-title');
+            if (titleElem) {
+                titleElem.innerHTML = `📋 ລາຍລະອຽດປະຈຳການວັນທີ ${formattedDate}`;
+            }
         });
     </script>
 </body>
